@@ -3,22 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
   <title>Cerita Kita - Berbagi Kisah Inspiratif</title>
-  <link rel="shortcut icon" href="favicon.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="public/icons/favicon.png" />
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="manifest.json" />
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-papapapapapapapapapapapapapa"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
 
-  <!-- Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
 </head>
 <body>
-  <a href="#main-content" class="skip-link" id="skip-link">Lewati ke konten utama</a>
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
   <header>
-    <!-- Navigasi akan di-render melalui SPA -->
+    <!-- Navigasi SPA akan di-render di sini -->
   </header>
 
   <main id="main-content" tabindex="-1" role="main">
@@ -26,7 +41,11 @@
   </main>
 
   <footer>
-    <!-- Footer akan di-render melalui SPA -->
+    <!-- Footer SPA akan di-render di sini -->
   </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 </body>
 </html>
