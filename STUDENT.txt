@@ -1,0 +1,2 @@
+APP_URL=https://cerita-kita.netlify.app
+MAP_SERVICE_API_KEY=<api_key_jika_dipakai>
