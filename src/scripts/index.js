@@ -1,9 +1,8 @@
 import '../styles/styles.css';
 import router from './routes/routes.js';
 import { dbHelper } from './utils/db.js';
-import './scripts/utils/sw-register.js';
-import './scripts/utils/notification.js';
-
+import './utils/sw-register.js';
+import './utils/notification.js';
 
 // Initialize app
 window.addEventListener('DOMContentLoaded', async () => {
