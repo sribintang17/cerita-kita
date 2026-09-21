@@ -347,23 +347,53 @@ class AboutPage extends HTMLElement {
         <div class="container">
           <div class="about-card">
             <h2>Siapa Kami</h2>
-            <p>Cerita Kita adalah platform berbagi cerita dan pengalaman inspiratif yang didirikan pada tahun 2021. Kami percaya bahwa setiap orang memiliki cerita unik yang bisa menginspirasi orang lain. Melalui Cerita Kita, kami berusaha membangun komunitas penulis dan pembaca yang saling terhubung melalui cerita-cerita autentik dari seluruh penjuru Indonesia.</p>
+               <p>
+        Cerita Kita adalah platform berbagi cerita dan pengalaman inspiratif
+        yang dikembangkan sebagai project pembelajaran pada tahun 2025.
+        Kami percaya bahwa setiap orang memiliki cerita unik yang bisa
+        menginspirasi orang lain. Melalui Cerita Kita, kami berusaha membangun
+        komunitas penulis dan pembaca yang saling terhubung melalui
+        cerita-cerita autentik dari seluruh penjuru Indonesia.
+      </p>
 
-            <p>Kami berkomitmen untuk menyediakan wadah bagi siapapun yang ingin berbagi kisah perjalanan, pengalaman hidup, petualangan, atau cerita inspiratif lainnya. Dengan antarmuka yang mudah digunakan dan komunitas yang mendukung, Cerita Kita menjadi rumah bagi ribuan penutur cerita dari berbagai latar belakang.</p>
+      <p>
+        Kami berkomitmen untuk menyediakan wadah bagi siapa pun yang ingin
+        berbagi kisah perjalanan, pengalaman hidup, petualangan, atau cerita
+        inspiratif lainnya. Dengan antarmuka yang mudah digunakan dan
+        komunitas yang mendukung, Cerita Kita menjadi tempat untuk berbagi
+        dan membaca berbagai cerita dari pengguna.
+      </p>
           </div>
 
           <div class="about-card">
-            <h2>Visi & Misi</h2>
-            <p><strong>Visi:</strong> Menjadi platform terbesar di Indonesia yang menghubungkan masyarakat melalui kekuatan cerita inspiratif.</p>
+  <h2>Visi & Misi</h2>
 
-            <p><strong>Misi:</strong></p>
-            <ul>
-              <li><i class="fas fa-check-circle"></i> Menyediakan platform yang inklusif untuk berbagi cerita dari berbagai sudut pandang</li>
-              <li><i class="fas fa-check-circle"></i> Memfasilitasi penulis Indonesia untuk mengembangkan bakat menulis mereka</li>
-              <li><i class="fas fa-check-circle"></i> Membangun komunitas yang saling mendukung dan menginspirasi</li>
-              <li><i class="fas fa-check-circle"></i> Mengarsipkan cerita-cerita berharga yang merepresentasikan keberagaman Indonesia</li>
-            </ul>
-          </div>
+  <p>
+    <strong>Visi:</strong> Menjadi platform terbesar di Indonesia yang
+    menghubungkan masyarakat melalui kekuatan cerita inspiratif.
+  </p>
+
+  <p><strong>Misi:</strong></p>
+
+  <ul>
+    <li>
+      <i class="fas fa-check-circle"></i>
+      Menyediakan platform yang inklusif untuk berbagi cerita dari berbagai sudut pandang
+    </li>
+    <li>
+      <i class="fas fa-check-circle"></i>
+      Memfasilitasi penulis Indonesia untuk mengembangkan bakat menulis mereka
+    </li>
+    <li>
+      <i class="fas fa-check-circle"></i>
+      Membangun komunitas yang saling mendukung dan menginspirasi
+    </li>
+    <li>
+      <i class="fas fa-check-circle"></i>
+      Mengarsipkan cerita-cerita berharga yang merepresentasikan keberagaman Indonesia
+    </li>
+  </ul>
+</div>
 
           <div class="about-card">
             <h2>Tim Kami</h2>
