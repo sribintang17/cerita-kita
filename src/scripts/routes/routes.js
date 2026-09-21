@@ -34,18 +34,15 @@ const router = async () => {
   const app = document.getElementById('app');
   if (!app) return;
 
-  // Fungsi untuk update isi konten
-  const updateContent = async () => {
-    app.innerHTML = await renderPage();
-    window.scrollTo(0, 0);
-  };
+ // Fungsi untuk update isi konten 
+const updateContent = async () => { 
+  app.innerHTML = await renderPage(); 
+  window.scrollTo(0, 0); 
+};
 
-  // Gunakan View Transition API jika tersedia
-  if (document.startViewTransition) {
-    document.startViewTransition(() => updateContent());
-  } else {
-    await updateContent();
-  }
+// Update halaman
+await updateContent();
+  
 };
 
 // Event router

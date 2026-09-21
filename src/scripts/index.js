@@ -1,58 +1,48 @@
+import notificationHelper from './utils/notification-helper.js';
 import '../styles/styles.css';
 import router from './routes/routes.js';
 import { dbHelper } from './utils/db.js';
 import './utils/sw-register.js';
-import './utils/notification.js';
 
-// Initialize app
-window.addEventListener('DOMContentLoaded', async () => {
-  await initializeApp();
+document.addEventListener('DOMContentLoaded', () => {
+  initializeApp();
   router();
 });
 
 async function initializeApp() {
   try {
-    // Initialize IndexedDB
     await dbHelper.init();
     console.log('Database initialized');
 
-    // Initialize Service Worker and Push Notifications
     if ('serviceWorker' in navigator) {
       await registerServiceWorker();
-      await setupPushNotifications();
     }
 
-    // Setup install prompt
+    setupPushNotifications();
     setupInstallPrompt();
-
-    // Setup offline indicator
     setupOfflineIndicator();
 
-    // Clean expired cache
-    await dbHelper.clearExpiredCache();
-    
+    if (dbHelper.clearExpiredCache) {
+      await dbHelper.clearExpiredCache();
+    }
   } catch (error) {
-    console.error('Failed to initialize app:', error);
+    console.error('App initialization failed:', error);
   }
 }
 
 async function registerServiceWorker() {
   try {
     const registration = await navigator.serviceWorker.register('/sw.js');
-    console.log('Service Worker registered:', registration);
+    console.log('Service Worker registered with scope:', registration.scope);
 
-    // Handle updates
     registration.addEventListener('updatefound', () => {
       const newWorker = registration.installing;
-      
       newWorker.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // Show update notification
           showUpdateNotification();
         }
       });
     });
-
   } catch (error) {
     console.error('Service Worker registration failed:', error);
   }
@@ -60,18 +50,18 @@ async function registerServiceWorker() {
 
 async function setupPushNotifications() {
   try {
-    await notificationHelper.init();
-    
-    // Auto-request permission if not already granted
-    if (notificationHelper.getPermissionStatus() === 'default') {
-      const granted = await notificationHelper.requestPermission();
-      if (granted) {
-        await notificationHelper.subscribe();
+    if (!('Notification' in window)) return;
+
+    const permission = Notification.permission;
+    if (permission === 'default') {
+      const granted = await Notification.requestPermission();
+      if (granted !== 'granted') {
+        console.log('Notification permission denied.');
+        return;
       }
-    } else if (notificationHelper.getPermissionStatus() === 'granted') {
-      await notificationHelper.subscribe();
     }
-    
+
+    await notificationHelper.subscribe();
   } catch (error) {
     console.error('Push notification setup failed:', error);
   }
@@ -79,249 +69,123 @@ async function setupPushNotifications() {
 
 function setupInstallPrompt() {
   let deferredPrompt;
-  
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    
-    // Show install button
-    showInstallButton(deferredPrompt);
+    showInstallButton();
   });
 
   window.addEventListener('appinstalled', () => {
-    console.log('App installed successfully');
     hideInstallButton();
-    
-    // Track install event
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'app_install', {
-        'event_category': 'PWA',
-        'event_label': 'installed'
-      });
-    }
+    console.log('App installed successfully');
   });
-}
 
-function showInstallButton(deferredPrompt) {
-  // Create install button
-  const installButton = document.createElement('button');
-  installButton.textContent = 'Install App';
-  installButton.classList.add('install-button');
-  installButton.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #2196f3;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 24px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    z-index: 1000;
-    transition: all 0.3s ease;
-  `;
+  function showInstallButton() {
+    const btn = document.createElement('button');
+    btn.textContent = 'Install App';
+    btn.style.cssText = `
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 12px 20px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      z-index: 1000;
+    `;
 
-  installButton.addEventListener('click', async () => {
-    if (deferredPrompt) {
+    btn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
       deferredPrompt.prompt();
-      const result = await deferredPrompt.choiceResult;
-      
-      if (result.outcome === 'accepted') {
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
         console.log('User accepted the install prompt');
       } else {
         console.log('User dismissed the install prompt');
       }
-      
       deferredPrompt = null;
-      installButton.remove();
-    }
-  });
+      btn.remove();
+    });
 
-  document.body.appendChild(installButton);
-}
+    document.body.appendChild(btn);
+  }
 
-function hideInstallButton() {
-  const installButton = document.querySelector('.install-button');
-  if (installButton) {
-    installButton.remove();
+  function hideInstallButton() {
+    const btn = document.querySelector('button');
+    if (btn) btn.remove();
   }
 }
 
 function setupOfflineIndicator() {
-  const offlineIndicator = document.createElement('div');
-  offlineIndicator.id = 'offline-indicator';
-  offlineIndicator.textContent = 'Mode Offline';
-  offlineIndicator.style.cssText = `
+  const indicator = document.createElement('div');
+  indicator.textContent = 'Kamu sedang offline';
+  indicator.style.cssText = `
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
+    width: 100%;
     background: #f44336;
     color: white;
     text-align: center;
     padding: 8px;
     transform: translateY(-100%);
     transition: transform 0.3s ease;
-    z-index: 9999;
-    font-size: 14px;
+    z-index: 1000;
   `;
 
-  document.body.appendChild(offlineIndicator);
+  document.body.appendChild(indicator);
 
-  function updateOnlineStatus() {
+  function updateStatus() {
     if (navigator.onLine) {
-      offlineIndicator.style.transform = 'translateY(-100%)';
+      indicator.style.transform = 'translateY(-100%)';
     } else {
-      offlineIndicator.style.transform = 'translateY(0)';
+      indicator.style.transform = 'translateY(0)';
     }
   }
 
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
-  
-  // Initial check
-  updateOnlineStatus();
+  window.addEventListener('online', updateStatus);
+  window.addEventListener('offline', updateStatus);
+  updateStatus();
 }
 
 function showUpdateNotification() {
-  const updateBanner = document.createElement('div');
-  updateBanner.innerHTML = `
-    <div style="position: fixed; top: 0; left: 0; right: 0; background: #4caf50; color: white; padding: 12px; text-align: center; z-index: 9999;">
-      <span>Update tersedia! </span>
-      <button onclick="location.reload()" style="background: none; border: 1px solid white; color: white; padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-left: 8px;">
-        Perbarui
-      </button>
-      <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; cursor: pointer; margin-left: 8px; font-size: 18px;">
-        ×
-      </button>
+  const bar = document.createElement('div');
+  bar.innerHTML = `
+    <div style="background: #4caf50; color: white; padding: 12px; text-align: center;">
+      Update tersedia. <button id="refresh-btn" style="margin-left: 8px; padding: 6px 12px;">Refresh</button>
     </div>
   `;
-  
-  document.body.appendChild(updateBanner);
-  
-  // Auto-hide after 10 seconds
-  setTimeout(() => {
-    if (updateBanner.parentElement) {
-      updateBanner.remove();
-    }
-  }, 10000);
+  document.body.appendChild(bar);
+
+  document.getElementById('refresh-btn').addEventListener('click', () => {
+    location.reload();
+  });
 }
 
-// SPA Navigation with View Transitions
+// SPA navigation with view transition fallback
 document.addEventListener('click', (e) => {
-  const target = e.target.closest('a');
-
-  if (!target) return;
-
-  if (target.classList.contains('skip-link')) return;
-
-  if (
-    target.href.startsWith(window.location.origin) &&
-    target.hash &&
-    target.hash !== window.location.hash
-  ) {e.preventDefault();
-   
-   // Use View Transitions API if supported
-   if ('startViewTransition' in document) {
-     document.startViewTransition(() => {
-       window.location.hash = target.hash;
-       router();
-     });
-   } else {
-     window.location.hash = target.hash;
-     router();
-   }
- }
+  const anchor = e.target.closest('a');
+  if (!anchor || anchor.classList.contains('skip-link') || anchor.target === '_blank') return;
+  if (anchor.href.startsWith(location.origin)) {
+    e.preventDefault();
+    const url = new URL(anchor.href);
+    location.hash = url.hash;
+    router();
+  }
 });
 
-// Handle back/forward navigation
 window.addEventListener('popstate', () => {
- if ('startViewTransition' in document) {
-   document.startViewTransition(() => {
-     router();
-   });
- } else {
-   router();
- }
+  router();
 });
 
-// Handle app visibility changes
-document.addEventListener('visibilitychange', () => {
- if (document.visibilityState === 'visible') {
-   // App became visible, sync data if needed
-   syncAppData();
- }
+// Handle unhandled errors and promise rejections
+window.addEventListener('error', (e) => {
+  console.error('Error captured:', e.message);
 });
 
-async function syncAppData() {
- try {
-   if (navigator.onLine) {
-     // Sync any pending data
-     await dbHelper.syncPendingData();
-     console.log('Data synced successfully');
-   }
- } catch (error) {
-   console.error('Data sync failed:', error);
- }
-}
-
-// Handle unhandled promise rejections
-window.addEventListener('unhandledrejection', (event) => {
- console.error('Unhandled promise rejection:', event.reason);
- 
- // Log error to analytics if available
- if (typeof gtag !== 'undefined') {
-   gtag('event', 'exception', {
-     'description': event.reason?.message || 'Unhandled promise rejection',
-     'fatal': false
-   });
- }
- 
- // Prevent default browser behavior
- event.preventDefault();
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('Unhandled rejection:', e.reason);
 });
-
-// Handle errors
-window.addEventListener('error', (event) => {
- console.error('Global error:', event.error);
- 
- // Log error to analytics if available
- if (typeof gtag !== 'undefined') {
-   gtag('event', 'exception', {
-     'description': event.error?.message || 'Global error',
-     'fatal': false
-   });
- }
-});
-
-// Performance monitoring
-if ('performance' in window) {
- window.addEventListener('load', () => {
-   setTimeout(() => {
-     const perfData = performance.getEntriesByType('navigation')[0];
-     
-     if (perfData && typeof gtag !== 'undefined') {
-       gtag('event', 'timing_complete', {
-         'name': 'load_time',
-         'value': Math.round(perfData.loadEventEnd - perfData.loadEventStart)
-       });
-     }
-   }, 0);
- });
-}
-
-// Export for testing
-if (typeof module !== 'undefined' && module.exports) {
- module.exports = {
-   initializeApp,
-   registerServiceWorker,
-   setupPushNotifications,
-   setupInstallPrompt,
-   setupOfflineIndicator,
-   showUpdateNotification,
-   syncAppData
- };
-}

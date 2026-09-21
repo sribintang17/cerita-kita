@@ -6,27 +6,37 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
   <title>Cerita Kita - Berbagi Kisah Inspiratif</title>
+  <meta name="description" content="Platform berbagi kisah inspiratif dari seluruh Indonesia. Tulis dan temukan cerita yang menginspirasi." />
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2196f3" />
 
   <!-- Favicon -->
-  <link rel="icon" href="public/icons/favicon.png" />
+  <link rel="icon" href="/icons/favicon.png" />
+
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
 
   <!-- Manifest PWA -->
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
 
   <!-- Font Awesome -->
   <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    integrity="sha512-papapapapapapapapapapapapapa"
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  integrity="sha512-papLF9v6MjhoPlzGc6Tz2E+Z0wP9bnkrhJHeTr1PHlFHPnAKKljvKAR27w5sLlyO6bbROAdzTZYy93mSFlz5xg=="
+  crossorigin="anonymous"
+/>
 
   <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"
   />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/styles.css" />
+
 </head>
 <body>
   <!-- Skip link for accessibility -->
@@ -47,5 +57,12 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+  <!-- Bundle App JS -->
+  <script src="bundle.js" type="module"></script>
+
+  <!-- Fallback if JS disabled -->
+  <noscript>
+    <strong>Maaf, aplikasi ini membutuhkan JavaScript untuk berjalan dengan baik.</strong>
+  </noscript>
 </body>
 </html>
