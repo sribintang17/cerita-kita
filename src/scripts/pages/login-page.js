@@ -1,6 +1,8 @@
 import '../../styles/styles.css';
 import { loginUser } from '../data/auth-api.js';
 
+const USER_NAME_KEY = 'storyapp_user_name';
+
 class LoginPage extends HTMLElement {
   connectedCallback() {
     this.render();
@@ -71,6 +73,11 @@ class LoginPage extends HTMLElement {
         if (result.error) {
           showAlert(result.message || 'Login gagal. Periksa email dan kata sandi Anda.');
         } else {
+          // Token sudah disimpan oleh loginUser; simpan nama untuk ditampilkan di header
+          if (result.loginResult?.name) {
+            localStorage.setItem(USER_NAME_KEY, result.loginResult.name);
+          }
+
           showAlert('Login berhasil! Mengalihkan ke halaman utama...', 'success');
 
           setTimeout(() => {

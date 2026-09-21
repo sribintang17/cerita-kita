@@ -1,5 +1,8 @@
 import '../../styles/styles.css';
 import HomePresenter from '../presenter/homePresenter.js';
+import { getToken, removeToken } from '../data/auth-api.js';
+
+const USER_NAME_KEY = 'storyapp_user_name';
 
 class HomePage extends HTMLElement {
   constructor() {
@@ -9,10 +12,82 @@ class HomePage extends HTMLElement {
 
   connectedCallback() {
     this.render();
+    this.renderAuthButtons();
+    this.setupDrawer();
     HomePresenter.init({
       contentContainer: this.querySelector('#story-list'),
     });
     this.initializeMap();
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  isLoggedIn() {
+    return Boolean(getToken());
+  }
+
+  renderAuthButtons() {
+    const container = this.querySelector('#auth-buttons');
+    if (!container) return;
+
+    if (this.isLoggedIn()) {
+      const userName = localStorage.getItem(USER_NAME_KEY) || 'Pengguna';
+
+      container.innerHTML = `
+        <span class="user-greeting">
+          <i class="fas fa-user-circle"></i> ${this.escapeHtml(userName)}
+        </span>
+        <a href="#/tambah-cerita" class="btn btn-primary btn-add-story" data-link>Tambah Cerita</a>
+        <button type="button" class="btn btn-outline" id="logout-btn">Keluar</button>
+      `;
+
+      container.querySelector('#logout-btn').addEventListener('click', () => {
+        this.handleLogout();
+      });
+    } else {
+      container.innerHTML = `
+        <a href="#/masuk" class="btn btn-outline" data-link>Masuk</a>
+        <a href="#/daftar" class="btn btn-primary" data-link>Daftar</a>
+      `;
+    }
+  }
+
+  handleLogout() {
+    const yakin = window.confirm('Apakah kamu yakin ingin keluar?');
+    if (!yakin) return;
+
+    removeToken();
+    localStorage.removeItem(USER_NAME_KEY);
+
+    this.renderAuthButtons();
+    window.location.hash = '#/';
+  }
+
+  setupDrawer() {
+    const toggle = this.querySelector('#drawer-toggle');
+    const navLinks = this.querySelector('#nav-links');
+    if (!toggle || !navLinks) return;
+
+    const icon = toggle.querySelector('i');
+
+    const setOpen = (open) => {
+      navLinks.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+      icon.className = open ? 'fas fa-times' : 'fas fa-bars';
+    };
+
+    toggle.addEventListener('click', () => {
+      setOpen(!navLinks.classList.contains('open'));
+    });
+
+    navLinks.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
   }
 
   async initializeMap() {
@@ -59,15 +134,24 @@ class HomePage extends HTMLElement {
             <a href="#/" class="logo" data-link>
               <i class="fas fa-book-open"></i> Cerita Kita
             </a>
-            <nav class="nav-links">
+            <nav class="nav-links" id="nav-links">
               <a href="#/" data-link>Beranda</a>
               <a href="#/kategori" data-link>Kategori</a>
               <a href="#/populer" data-link>Populer</a>
               <a href="#/about" data-link>Tentang</a>
             </nav>
-            <div class="auth-buttons">
-              <a href="#/masuk" class="btn btn-outline" data-link>Masuk</a>
-              <a href="#/tambah-cerita" class="btn btn-primary" data-link>Tambah Cerita</a>
+            <div class="header-actions">
+              <div class="auth-buttons" id="auth-buttons"></div>
+              <button
+                type="button"
+                class="drawer-toggle"
+                id="drawer-toggle"
+                aria-label="Buka menu"
+                aria-expanded="false"
+                aria-controls="nav-links"
+              >
+                <i class="fas fa-bars"></i>
+              </button>
             </div>
           </div>
         </div>
